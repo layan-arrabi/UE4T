@@ -92,7 +92,46 @@ class Corona {
             }
         }
 
-        
+        // Pre-compute sorted edges for Rules 11-14
+        const sortedEdges = this.edges.map(edge => [...edge].sort((a, b) => a.offset - b.offset));
+
+        // Rule: if the center square is size 1 or 2, then first edge must start at offset 0, and no seg is allowed with offset center
+        if (c === 1 || c === 2) {
+            for (let ei = 0; ei < 4; ei++) {
+                const edge = this.edges[ei];
+                if (edge.length > 0 && edge[0].offset !== 0) {
+                    return { ok: false, reason: `Center is size ${c} (1 or 2) and edge does not start at offset 0`, where: ei };
+                }
+
+                //Rule: if the center is 1 or 2, then no seg is allowed with offset center
+                for (let i = 0; i < edge.length; i++) {
+                    const seg = edge[i];
+                    if (seg.offset === c) {
+                        return { ok: false, reason: `Center is size ${c} and segment offset equals center`, where: { edge: ei, segment: i } };
+                    }
+                }
+            }
+        }   
+
+        // Rule: when placing squares size 1 and 2, at least one of the two edges must align with the center edge.
+        // This means either offset is 0, or c = squares.size + offset 
+        for (let ei = 0; ei < 4; ei++) {
+            const segs = sortedEdges[ei];
+            for (let i = 0; i < segs.length; i++) {
+                const seg = segs[i];
+                if (seg.size === 1 || seg.size === 2) {
+                    // check if the segment aligns with center edge
+                    let aligns = false;
+                    if (segs[i].offset === 0) aligns = true;
+                    if (c === segs[i].offset + segs[i].size) aligns = true;
+                    if (!aligns) {
+                        return { ok: false, reason: "square size 1 or 2 not aligned with center square", where: { edge: ei, segment: i } };
+                    }
+                }
+            }
+        }
+
+
         // Corner gap check: detect isolated 1×1 squares
         // A 1×1 square is invalid if surrounded by larger structures:
         // - Previous edge's overhang > 1 (or last segment > 1)
@@ -100,7 +139,6 @@ class Corona {
         
         // Step 1: Compute overhang for each edge
         const overhangs = [];
-        const sortedEdges = this.edges.map(edge => [...edge].sort((a, b) => a.offset - b.offset));
         
         for (const segs of sortedEdges) {
             const lastSeg = segs[segs.length - 1];
@@ -135,8 +173,8 @@ class Corona {
                     // Check what's after this 1×1 square
                     let afterSize;
                     if (i === segs.length - 1) {
-                        // Last square on edge - check next edge's first square
-                        afterSize = nextSegs[0].size;
+                        // Last square on edge - check next edge's overhang
+                        afterSize = -nextSegs[0].offset;
                     } else {
                         // Not last - check next square on same edge
                         afterSize = segs[i + 1].size;

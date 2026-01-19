@@ -128,12 +128,11 @@ test("invalid: edge walk doesn't reach center", () => {
 });
 
 test("valid: edges without 1x1 corner gaps OK", () => {
-    assert.strictEqual(isValid("2|1^0,2^1|1^0,2^1|1^0,2^1|1^0,2^1"), true);
+    assert.strictEqual(isValid("2|3^0|4^0|3^0|4^0"), true);
 });
 
 test("invalid: edges with 1x1 gaps", () => {
     assert.strictEqual(isValid("2|1^0,2^1|1^0,2^1|1^0,4^1|1^0,4^1"), false);
-    assert.strictEqual(getReason("2|1^0,2^1|1^0,2^1|1^0,4^1|1^0,4^1"), "isolated 1x1 square trapped by larger squares");
 });
 
 test("valid: no 1x1 corner gaps, asymmetry OK", () => {
@@ -198,9 +197,9 @@ test("enumeration: center=1 produces 24 coronas", () => {
     assert.strictEqual(coronas.length, 24);
 });
 
-test("enumeration: center=2 produces 34 coronas", () => {
+test("enumeration: center=2 produces 17 coronas", () => {
     const coronas = enumerateUniqueCoronas(2);
-    assert.strictEqual(coronas.length, 34);
+    assert.strictEqual(coronas.length, 17);
 });
 
 test("enumeration: all coronas are valid", () => {
@@ -218,6 +217,51 @@ test("enumeration: center=2 includes known valid corona", () => {
     const coronas = enumerateUniqueCoronas(2);
     const compacts = coronas.map(c => c.toCompact());
     assert.strictEqual(compacts.includes("2|3^0|3^0|3^0|3^0"), true);
+});
+
+// ============================================================
+// Rule 11: Center 1 or 2 must have edges starting at offset 0
+// ============================================================
+
+test("rule 11: redundant (already checked by 'edge does not start at 0')", () => {
+    // This rule was redundant and removed
+});
+
+// ============================================================
+// Rule 12: Center 1 or 2 cannot have segments at offset == center
+// ============================================================
+
+test("rule 12: center=2, segment at offset=2 (invalid)", () => {
+    assert.strictEqual(isValid("2|1^0,3^2|1^0|1^0|1^0"), false);
+});
+
+test("rule 12: center=2, max segment offset at 1 (valid)", () => {
+    assert.strictEqual(isValid("2|3^0|4^0|3^0|4^0"), true);
+});
+
+test("rule 12: center=1, segment at offset=1 (invalid)", () => {
+    assert.strictEqual(isValid("1|2^0,3^1|2^0|2^0|2^0"), false);
+});
+
+// ============================================================
+// Rule 13: Sizes 1-2 must align with center square
+// Alignment: offset === 0 OR center === size + offset
+// ============================================================
+
+test("rule 13: center=2, size=2 at offset=1 (not aligned, invalid)", () => {
+    assert.strictEqual(isValid("2|2^1|1^0|1^0|1^0"), false);
+});
+
+test("rule 13: center=2 with only alignment-valid sizes", () => {
+    assert.strictEqual(isValid("2|3^0|3^0|3^0|3^0"), true);
+});
+
+test("rule 13: center=1 with alignment-valid sizes", () => {
+    assert.strictEqual(isValid("1|2^0|3^0|2^0|3^0"), true);
+});
+
+test("rule 13: center=1, size=1 at offset=1 (invalid)", () => {
+    assert.strictEqual(isValid("1|2^0,1^1|2^0|2^0|2^0"), false);
 });
 
 console.log(`\n${passed} passed, ${failed} failed`);

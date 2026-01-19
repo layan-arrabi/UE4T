@@ -58,6 +58,41 @@ const testCases = [
         tests: [
             { name: "edges with 1x1 gaps", corona: Corona.fromCompact("2|1^0,2^1|1^0,2^1|1^0,4^1|1^0,4^1"), expectedValid: false }
         ]
+    },
+    {
+        section: "❌ Invalid: Rule 11 (Center 1-2 must start at offset 0)",
+        tests: [
+            { name: "center=2, edge starts at offset 1", corona: Corona.fromCompact("2|3^1|1^0|1^0|1^0"), expectedValid: false },
+            { name: "center=1, edge at offset 1", corona: Corona.fromCompact("1|3^1|2^0|2^0|2^0"), expectedValid: false }
+        ]
+    },
+    {
+        section: "✅ Valid: Rule 11 (Center 1-2 start at offset 0)",
+        tests: [
+            { name: "center=2, all edges start at offset 0", corona: Corona.fromCompact("2|1^0,2^1|1^0,2^1|1^0,2^1|1^0,2^1"), expectedValid: true }
+        ]
+    },
+    {
+        section: "❌ Invalid: Rule 12 (Center 1-2 no segment at offset == center)",
+        tests: [
+            { name: "center=2, segment at offset=2", corona: Corona.fromCompact("2|1^0,1^2|1^0,1^1|1^0,1^1|1^0,1^1"), expectedValid: false },
+            { name: "center=1, segment at offset=1", corona: Corona.fromCompact("1|2^0,3^1|2^0|2^0|2^0"), expectedValid: false }
+        ]
+    },
+    {
+        section: "❌ Invalid: Rule 13 (Sizes 1-2 must align with center)",
+        tests: [
+            { name: "center=4, size=2 at offset=1 (not aligned)", corona: Corona.fromCompact("4|2^1|1^0,1^0,1^0,1^0|1^0,1^0,1^0,1^0|1^0,1^0,1^0,1^0"), expectedValid: false },
+            { name: "center=4, size=1 at offset=2 (not aligned)", corona: Corona.fromCompact("4|1^0,1^2|1^0,1^0,1^0,1^0|1^0,1^0,1^0,1^0|1^0,1^0,1^0,1^0"), expectedValid: false }
+        ]
+    },
+    {
+        section: "✅ Valid: Rule 13 (Sizes 1-2 aligned)",
+        tests: [
+            { name: "center=4, sizes 1-2 at offsets 0,2 (both aligned)", corona: Corona.fromCompact("4|2^0,2^2|1^0,1^1,1^2,1^3|1^0,1^1,1^2,1^3|1^0,1^1,1^2,1^3"), expectedValid: true },
+            { name: "center=3, size=1 at 0, size=2 at 1 (both aligned)", corona: Corona.fromCompact("3|1^0,2^1|1^0,1^1,1^2|1^0,1^1,1^2|1^0,1^1,1^2"), expectedValid: true },
+            { name: "center=5, size=2 at offset=3 (aligned: 5=2+3)", corona: Corona.fromCompact("5|1^0,1^1,2^3|1^0,1^1,1^2,1^3,1^4|1^0,1^1,1^2,1^3,1^4|1^0,1^1,1^2,1^3,1^4"), expectedValid: true }
+        ]
     }
 ];
 

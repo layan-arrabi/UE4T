@@ -9,31 +9,31 @@
 
 ---
 
-## Phase 1: Enumerate Valid 2-Coronas
+## 1. Phase 1: Enumerate Valid 2-Coronas
 
 ### Goal
 Generate all valid coronas with center size = 2, save to valid-coronas.json
 
 ### Implementation Tasks
-- [x] **Extend enumeration logic** for center = 2
+- [x] 1. **Extend enumeration logic** for center = 2
    - Valid edge walks: combinations of segments that cover length 2
    - Possible single-segment edges: `[{2,0}]`, `[{3,0}]`, `[{4,0}]`
    - Possible two-segment edges: `[{1,0},{1,1}]`, `[{1,0},{2,1}]`, `[{1,0},{3,1}]`, etc.
    - Exclude: `[{2,0}]` (violates unilateral: size == center at offset 0)
    
-- [x] **Generate edge choices** for center = 2
+- [x] 2. **Generate edge choices** for center = 2
    - Enumerate all valid walks covering length 2
    - Filter by unilateral constraints:
      - No consecutive equal sizes
      - No perfect center alignment (size=2 at offset=0)
    
-- [x] **Enumerate all combinations**
+- [x] 3. **Enumerate all combinations**
    - Generate all 4-edge combinations
    - Validate each corona
    - Deduplicate using canonical rotation
    - Visualize these enumerated coronas in the webpage (index.html)
    
-- [x] **Update valid-coronas.json**
+- [x] 4. **Update valid-coronas.json**
    - Extend JSON structure to support multiple center sizes
    - New format: `{ "1": [...], "2": [...] }`
    - Preserve existing 1-coronas
@@ -47,30 +47,30 @@ Generate all valid coronas with center size = 2, save to valid-coronas.json
 
 ---
 
-## Phase 2: Enumerate Valid 3-Coronas
+## 2. Phase 2: Enumerate Valid 3-Coronas
 
 ### Goal
 Generate all valid coronas with center size = 3, append to valid-coronas.json
 
 ### Implementation Tasks
-- [ ] **Generate edge choices** for center = 3
+- [ ] 1. **Generate edge choices** for center = 3
    - Valid walks covering length 3
    - Single segments: `{4,0}`, `{3,0}` excluded (violates unilateral), `{4,0}` valid
    - Two segments: `{1,0},{2,1}`, `{1,0},{3,1}`, `{2,0},{1,2}`, `{1,0},{4,1}`, etc.
    - Three segments: `{1,0},{1,1},{1,2}`, `{1,0},{1,1},{2,2}`, etc.
    
-- [ ] **Edge walk generator**
+- [ ] 2. **Edge walk generator**
    - Create recursive/iterative function to generate all valid walks
    - Input: center size, allowed sizes
    - Output: list of valid edge walks
    
-- [ ] **Enumerate and validate**
+- [ ] 3. **Enumerate and validate**
    - Generate all 4-edge combinations
    - Apply validation and deduplication
    - Add "Generate Coronas (Center = 3)" button to index.html
    - Update web-app.js to handle center=3 enumeration
    
-- [ ] **Append to valid-coronas.json**
+- [ ] 4. **Append to valid-coronas.json**
    - Add `"3": [...]` entry
 
 ### Expected Output
@@ -82,23 +82,23 @@ Generate all valid coronas with center size = 3, append to valid-coronas.json
 
 ---
 
-## Phase 3: Enumerate Valid 4-Coronas
+## 3. Phase 3: Enumerate Valid 4-Coronas
 
 ### Goal
 Generate all valid coronas with center size = 4, append to valid-coronas.json
 
 ### Implementation Tasks
-- [ ] **Generate edge choices** for center = 4
+- [ ] 1. **Generate edge choices** for center = 4
    - Valid walks covering length 4
    - Exclude: `{4,0}` (perfect center alignment)
    - Include: all other valid combinations
    
-- [ ] **Enumerate and validate**
+- [ ] 2. **Enumerate and validate**
    - Same process as phases 1-2
    - Add "Generate Coronas (Center = 4)" button to index.html
    - Update web-app.js to handle center=4 enumeration
    
-- [ ] **Finalize valid-coronas.json**
+- [ ] 3. **Finalize valid-coronas.json**
    - Complete structure: `{ "1": [...], "2": [...], "3": [...], "4": [...] }`
 
 ### Expected Output
@@ -110,7 +110,7 @@ Generate all valid coronas with center size = 4, append to valid-coronas.json
 
 ---
 
-## Phase 4: Corona Compatibility Analysis
+## 4. Phase 4: Corona Compatibility Analysis
 
 ### Goal
 For each valid corona, for each square size, identify compatible coronas that can tile adjacently without contradiction.
@@ -130,7 +130,7 @@ Two coronas are compatible if:
 
 ### Implementation Tasks
 
-#### 4.1: Compatibility Data Structure
+#### 1. Compatibility Data Structure
 ```typescript
 interface CompatibilityEntry {
     coronaId: string;           // e.g., "1|2^0|2^0|2^0|2^0"
@@ -141,19 +141,19 @@ interface CompatibilityEntry {
 }
 ```
 
-#### 4.2: Compatibility Checker
+#### 2. Compatibility Checker
 - [ ] Create function: `checkCompatibility(coronaA: Corona, coronaB: Corona): boolean`
 - [ ] Analyze edge alignment
 - [ ] Check geometric constraints
 - [ ] Return true if coronas can coexist as neighbors
 
-#### 4.3: Generate Compatibility Matrix
+#### 3. Generate Compatibility Matrix
 - [ ] For each corona in valid-coronas.json:
   - [ ] For each possible adjacent center size (1, 2, 3, 4):
     - [ ] Test compatibility with all coronas of that size
     - [ ] Record compatible pairs
 
-#### 4.4: Output Format
+#### 4. Output Format
 Save to `corona-compatibility.json`:
 ```json
 {

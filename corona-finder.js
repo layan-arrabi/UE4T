@@ -126,6 +126,9 @@ function enumerateUniqueCoronas(centerSize, allowedSizes = [1, 2, 3, 4]) {
     const seen = new Set();
     const unique = [];
 
+    // TODOs: enumerate with offset -2 and -3, for center sizes 3 and 4
+
+
     // Generate all combinations of 4 edges
     for (const e0 of edgeChoices) {
         for (const e1 of edgeChoices) {
