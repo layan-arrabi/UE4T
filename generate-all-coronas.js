@@ -43,7 +43,7 @@ function generateAllCoronas() {
 }
 
 // Run if this is the main module
-if (typeof process !== 'undefined' && import.meta.url === `file://${process.argv[1]}`) {
+if (import.meta.url.endsWith('generate-all-coronas.js')) {
     generateAllCoronas();
 }
 

@@ -55,9 +55,6 @@ class Corona {
                 if (!allowedSizes.includes(seg.size) || seg.size <= 0) {
                     return { ok: false, reason: "invalid segment size", where: { ei, seg } };
                 }
-                if (seg.offset < 0 || seg.offset > c) {
-                    return { ok: false, reason: "offset out of range", where: { ei, seg } };
-                }
                 if (seg.size === c && seg.offset === 0) {
                     return { ok: false, reason: "not unilateral (center-sized aligned)", where: { ei, seg } };
                 }
@@ -72,9 +69,9 @@ class Corona {
                 }
             }
 
-            // must start at 0
-            if (segs[0].offset !== 0) {
-                return { ok: false, reason: "edge does not start at 0", where: ei };
+            // fist segment must pass offset 0
+            if (segs[0].offset < 0 && (segs[0].size + segs[0].offset) <= 0) {
+                return { ok: false, reason: "edge does not progress towards center", where: ei };
             }
 
             // real walk + coverage
@@ -92,6 +89,28 @@ class Corona {
             }
         }
 
+        // Rule: we must always have a corner square.
+        // Make sure in each edge, at least the last segment extends beyond center
+        // so that it can form a corner with the next edge.
+        // Unless the next segment starts with a negative offset
+        for (let ei = 0; ei < 4; ei++) {
+            const edge = this.edges[ei];
+            const lastSeg = edge[edge.length - 1];
+            const nextEdge = this.edges[(ei + 1) % 4];
+            const nextSeg = nextEdge[0];
+            
+            if (lastSeg.offset + lastSeg.size <= c && !(nextSeg && nextSeg.offset < 0)) {
+                return { ok: false, reason: "last segment does not extend beyond center to form corner", where: ei };
+            }
+
+            //Rule: this side cannot have an overhang if the next edge starts with a negative offset
+            if (nextSeg && nextSeg.offset < 0) {
+                if (lastSeg.offset + lastSeg.size > c) {
+                    return { ok: false, reason: "overhang not allowed before negative offset on next edge", where: ei };
+                }
+            }
+        }
+
         // Pre-compute sorted edges for Rules 11-14
         const sortedEdges = this.edges.map(edge => [...edge].sort((a, b) => a.offset - b.offset));
 
@@ -99,7 +118,7 @@ class Corona {
         if (c === 1 || c === 2) {
             for (let ei = 0; ei < 4; ei++) {
                 const edge = this.edges[ei];
-                if (edge.length > 0 && edge[0].offset !== 0) {
+                if (false && edge.length > 0 && edge[0].offset !== 0) {
                     return { ok: false, reason: `Center is size ${c} (1 or 2) and edge does not start at offset 0`, where: ei };
                 }
 
@@ -159,7 +178,7 @@ class Corona {
             for (let i = 0; i < segs.length; i++) {
                 const seg = segs[i];
                 
-                if (seg.size === 1) {
+                if (seg.size === 1 || seg.size === 2) {
                     // Check what's before this 1×1 square
                     let beforeSize;
                     if (i === 0) {
@@ -180,11 +199,19 @@ class Corona {
                         afterSize = segs[i + 1].size;
                     }
                     
-                    // If surrounded by bigger structures (both > 1), it's invalid
-                    if (beforeSize > 1 && afterSize > 1) {
+                    // A gap of 1x1 is not allowed
+                    if (seg.size === 1 && beforeSize > 1 && afterSize > 1) {
                         return { 
                             ok: false, 
                             reason: "isolated 1x1 square trapped by larger squares", 
+                            where: { edge: ei, segment: i, beforeSize, afterSize } 
+                        };
+                    }
+                    // A gap of 2x1 is not allowed
+                    if (seg.size === 2 && beforeSize > 2 && afterSize > 2) {
+                        return { 
+                            ok: false, 
+                            reason: "isolated 2x2 square trapped by larger squares", 
                             where: { edge: ei, segment: i, beforeSize, afterSize } 
                         };
                     }

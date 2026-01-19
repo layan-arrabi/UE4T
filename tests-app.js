@@ -93,6 +93,15 @@ const testCases = [
             { name: "center=3, size=1 at 0, size=2 at 1 (both aligned)", corona: Corona.fromCompact("3|1^0,2^1|1^0,1^1,1^2|1^0,1^1,1^2|1^0,1^1,1^2"), expectedValid: true },
             { name: "center=5, size=2 at offset=3 (aligned: 5=2+3)", corona: Corona.fromCompact("5|1^0,1^1,2^3|1^0,1^1,1^2,1^3,1^4|1^0,1^1,1^2,1^3,1^4|1^0,1^1,1^2,1^3,1^4"), expectedValid: true }
         ]
+    },
+    {
+        // test cases that start with negative offset
+        section: "✅ Valid: Edge Walks Starting from Negative Offsets",
+        tests: [
+            { name: "center=3, edge starts at -1", corona: Corona.fromCompact("3|3^-1,1^2|3^-1,1^2|3^-1,1^2|3^-1,1^2"), expectedValid: true },
+            { name: "center=2, edge starts at -2", corona: Corona.fromCompact("2|4^-2|4^-2|4^-2|4^-2"), expectedValid: true },
+            { name: "center=1, edge starts at -2", corona: Corona.fromCompact("1|4^-3|4^-3|4^-3|4^-3"), expectedValid: true }
+        ]
     }
 ];
 
@@ -113,7 +122,7 @@ function drawCorona(corona, canvas) {
     let maxExtent = corona.center;
     for (const edge of corona.edges) {
         for (const seg of edge) {
-            maxExtent = Math.max(maxExtent, seg.offset + seg.size);
+            maxExtent = Math.max(maxExtent, Math.abs(seg.offset) + seg.size);
         }
     }
 
@@ -213,6 +222,17 @@ function runTests() {
             header.appendChild(name);
             header.appendChild(badge);
             card.appendChild(header);
+            
+            // Add validation result output
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'validation-result';
+            if (test.corona) {
+                const result = test.corona.validate([1, 2, 3, 4]);
+                resultDiv.textContent = JSON.stringify(result, null, 2);
+            } else {
+                resultDiv.textContent = '{ "ok": false, "reason": "unparseable" }';
+            }
+            card.appendChild(resultDiv);
             
             const canvasWrapper = document.createElement('div');
             canvasWrapper.className = 'canvas-wrapper';

@@ -7,6 +7,7 @@
   "scripts": {
     "start": "node corona-finder.js",
     "generate": "node generate-js-new.js",
+    "generate-coronas": "node generate-all-coronas.js",
     "serve": "live-server",
     "test": "node corona-finder-test.js"
   },

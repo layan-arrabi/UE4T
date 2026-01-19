@@ -72,6 +72,11 @@ function generateEdgeWalks(centerSize, allowedSizes = [1, 2, 3, 4]) {
                     continue;
                 }
             }
+
+            if (currentOffset < 0 && currentOffset + size <= 0) {
+                // Skip segments that don't progress the walk towards center
+                continue;
+            }
             
             // Add segment and continue search
             currentWalk.push({ size, offset: currentOffset });
@@ -80,7 +85,12 @@ function generateEdgeWalks(centerSize, allowedSizes = [1, 2, 3, 4]) {
         }
     }
     
-    search([], 0);
+    //search with starting offset 0, -1, -2, -3
+    //regardless of center size
+    const maxAllowedSize = Math.max(...allowedSizes);
+    for (let i = 0; i < maxAllowedSize; i++) {
+        search([], -i);
+    }
     return walks;
 }
 
@@ -171,6 +181,34 @@ function loadCoronasFromFile(filename) {
 }
 
 // -----------------------------
+// Enumeration for center = 3
+// -----------------------------
+
+function enumerateUniqueCoronasCenter3() {
+    /**
+     * For center = 3:
+     *   - valid edge walks cover length 3
+     *   - (3,0) is excluded by unilateral rule
+     *   - deduplicate by cyclic rotation of the 4 edges
+     */
+    return enumerateUniqueCoronas(3);
+}
+
+// -----------------------------
+// Enumeration for center = 4
+// -----------------------------
+
+function enumerateUniqueCoronasCenter4() {
+    /**
+     * For center = 4:
+     *   - valid edge walks cover length 4
+     *   - (4,0) is excluded by unilateral rule
+     *   - deduplicate by cyclic rotation of the 4 edges
+     */
+    return enumerateUniqueCoronas(4);
+}
+
+// -----------------------------
 // Run enumeration
 // -----------------------------
 
@@ -202,5 +240,7 @@ export {
     enumerateUniqueCoronas,
     enumerateUniqueCoronasCenter1, 
     enumerateUniqueCoronasCenter2,
+    enumerateUniqueCoronasCenter3,
+    enumerateUniqueCoronasCenter4,
     loadCoronasFromFile 
 };

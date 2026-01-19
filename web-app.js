@@ -1,8 +1,10 @@
 import { Corona } from './corona.js';
-import { enumerateUniqueCoronasCenter1, enumerateUniqueCoronasCenter2 } from './corona-finder.js';
+import { enumerateUniqueCoronasCenter1, enumerateUniqueCoronasCenter2, enumerateUniqueCoronasCenter3, enumerateUniqueCoronasCenter4 } from './corona-finder.js';
 
 const generateBtn = document.getElementById('generateBtn');
 const generateBtn2 = document.getElementById('generateBtn2');
+const generateBtn3 = document.getElementById('generateBtn3');
+const generateBtn4 = document.getElementById('generateBtn4');
 const coronasDiv = document.getElementById('coronas');
 const statsDiv = document.getElementById('stats');
 const countSpan = document.getElementById('count');
@@ -16,7 +18,7 @@ function drawCoronaToCanvas(corona) {
     const ctx = canvas.getContext('2d');
     
     const size = 200;
-    const scale = size / (corona.center * 8);
+    const scale = size / (corona.center * 1.5 + 10);
     const centerSize = corona.center * scale;
     
     canvas.width = size;
@@ -111,4 +113,11 @@ generateBtn.addEventListener('click', async () => {
 
 generateBtn2.addEventListener('click', async () => {
     generateCoronas(enumerateUniqueCoronasCenter2, 2);
+});
+generateBtn3.addEventListener('click', async () => {
+    generateCoronas(enumerateUniqueCoronasCenter3, 3);
+});
+
+generateBtn4.addEventListener('click', async () => {
+    generateCoronas(enumerateUniqueCoronasCenter4, 4);
 });
