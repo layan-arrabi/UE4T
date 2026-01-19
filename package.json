@@ -1,0 +1,23 @@
+{
+  "name": "tiling-corona-finder",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Equitransitive Square Corona Enumeration",
+  "main": "corona-finder.js",
+  "scripts": {
+    "start": "node corona-finder.js",
+    "generate": "node generate-js-new.js",
+    "serve": "live-server",
+    "test": "node corona-finder-test.js"
+  },
+  "keywords": [
+    "tiling",
+    "enumeration",
+    "geometry"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+}
