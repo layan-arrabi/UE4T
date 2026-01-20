@@ -46,6 +46,16 @@ Generate all valid coronas with center size = 2, save to valid-coronas.json
 - [x] Documentation updated: README.md, architecture.md, plan.md
 
 ---
+## 1.5 thigns to fix
+- two square must be aligned with all squares around it, including the overhang from previous side
+
+- exclude the mirrorred coronas, becasue they are equivalent
+
+- buttons should load coronas from the valid-coronas.json file, for speed
+
+
+
+
 
 ## 2. Phase 2: Enumerate Valid 3-Coronas
 
